@@ -19,6 +19,9 @@ from keras.layers import SimpleRNN, Dense, Embedding
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 # create dataset
 data = {
     "text": [
@@ -212,3 +215,24 @@ embedding_matrix = np.zeros((len(word_index) + 1, embedding_dim))
 for word, i in word_index.items():
     if word in word2vec_model.wv:
         embedding_matrix[i] = word2vec_model.wv[word]
+
+# modelling: build, train and test rnn model
+
+model = Sequential()
+
+# embedding
+model.add(Embedding(input_dim=len(word_index) + 1, output_dim=embedding_dim,
+                    weights=[embedding_matrix], input_length=maxlen, trainable=False)
+          )
+
+# RNN layer
+model.add(SimpleRNN(50, return_sequences=False))
+
+# output layer
+model.add(Dense(1, activation="sigmoid"))
+
+# compile model
+model.compile(optimizer="adam", loss="binary_crossentropy",metrics=["accuracy"])
+
+# train model
+model.fit(X_train,y_train, epochs=10,batch_size=2, validation_data=(X_test, y_test))
