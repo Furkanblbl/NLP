@@ -11,7 +11,8 @@ import numpy as np
 
 from gensim.models import Word2Vec
 
-from keras_preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
 from keras.layers import SimpleRNN, Dense, Embedding
 
@@ -186,5 +187,28 @@ df = pd.DataFrame(data)
 # tokenization
 tokenizer = Tokenizer()
 tokenizer.fit_on_texts(df["text"])
-sequences = tokenizer.text_to_sequences(df["text"])
+sequences = tokenizer.texts_to_sequences(df["text"])
 word_index = tokenizer.word_index
+# print(word_index)
+
+# padding
+maxlen = max(len(seq) for seq in sequences)
+X = pad_sequences(sequences, maxlen=maxlen)
+
+# label encoding
+label_encoder = LabelEncoder()
+y = label_encoder.fit_transform(df["label"])
+# print(y)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# word embedding: word2vec
+
+sentences = [text.split() for text in df["text"]]
+word2vec_model = Word2Vec(sentences, vector_size=50, window=5, min_count=1)
+
+embedding_dim = 50
+embedding_matrix = np.zeros((len(word_index) + 1, embedding_dim))
+for word, i in word_index.items():
+    if word in word2vec_model.wv:
+        embedding_matrix[i] = word2vec_model.wv[word]
