@@ -18,6 +18,7 @@ from keras.layers import SimpleRNN, Dense, Embedding
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
+# create dataset
 data = {
     "text": [
         "Yemekler harikaydı, servis çok hızlıydı.",
@@ -177,3 +178,13 @@ data = {
         "negative"
     ]
 }
+
+df = pd.DataFrame(data)
+
+# tokenization, padding, label encoding, train test split
+
+# tokenization
+tokenizer = Tokenizer()
+tokenizer.fit_on_texts(df["text"])
+sequences = tokenizer.text_to_sequences(df["text"])
+word_index = tokenizer.word_index
