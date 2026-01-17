@@ -236,3 +236,30 @@ model.compile(optimizer="adam", loss="binary_crossentropy",metrics=["accuracy"])
 
 # train model
 model.fit(X_train,y_train, epochs=10,batch_size=2, validation_data=(X_test, y_test))
+
+# evaluate rnn model
+test_lost, test_accuracy = model.evaluate(X_test, y_test)
+print(f"Test Loss: {test_lost}")
+print(f"Test accuracy: {test_accuracy}")
+
+# sentece classification
+def classify_sentence(sentence):
+    seq = tokenizer.texts_to_sequences([sentence])
+    padded_seq = pad_sequences(seq, maxlen=maxlen)
+    
+    prediction = model.predict(padded_seq)
+    
+    predicted_class = (prediction > 0.5).astype(int)
+    label = "positive" if predicted_class[0][0] == 1 else "Negative"
+
+    return label
+
+sentence = "Restoran çok temizdi ve yemekler güzeldi"
+
+result = classify_sentence(sentence)
+print(f"Result: {result}")
+
+
+sentence = "Servisten hiç memnun kalmadık. Kimseye önermem."
+result = classify_sentence(sentence)
+print(f"Result: {result}")
