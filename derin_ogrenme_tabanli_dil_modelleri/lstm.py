@@ -13,6 +13,9 @@ from tensorflow.keras.layers import LSTM, Dense, Embedding
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences 
 
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 # Create train dataset
 texts = [
     "Bugün hava çok güzel.",
@@ -211,5 +214,21 @@ y = tf.keras.utils.to_categorical(y, num_classes = total_words) # one hot encodi
 
 # Create lstm model, compile, train, evaluate
 
+model = Sequential()
+
+# embedding
+model.add(Embedding(total_words, 50, input_length=X.shape[1]))
+
+# lstm
+model.add(LSTM(100, return_sequences = False))
+
+# output
+model.add(Dense(total_words, activation="softmax"))
+
+# model compile
+model.compile(optimizer = "adam", loss = "categorical_crossentropy", metrics = ["accuracy"])
+
+# model training
+model.fit(X, y, epochs=100, verbose=1)
 
 # model prediction
