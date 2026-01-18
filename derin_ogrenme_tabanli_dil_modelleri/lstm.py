@@ -203,7 +203,7 @@ for text in texts:
 # padding
 max_sequence_lengt = max(len(x) for x in input_sequences)
 # print(f"max_sequence_lengt: {max_sequence_lengt}")
-input_sequences = pad_sequences(input_sequences, maxlen = max_sequence_lengt, padding="pre")
+input_sequences = pad_sequences(input_sequences, maxlen = max_sequence_lengt-1, padding="pre")
 
 # X(input) and y(target)
 X = input_sequences[:,:-1]
@@ -232,3 +232,38 @@ model.compile(optimizer = "adam", loss = "categorical_crossentropy", metrics = [
 model.fit(X, y, epochs=100, verbose=1)
 
 # model prediction
+
+def genereate_text(seed_text, next_words):
+    
+    for _ in range(next_words):
+        # convert digital
+        token_list = tokenizer.texts_to_sequences([seed_text])[0]
+
+        # padding
+        token_list = pad_sequences([token_list], maxlen=max_sequence_lengt-1, padding="pre")
+        
+        # Predict probability distribution over the vocabulary
+        predicted_probilities = model.predict(token_list, verbose=0)
+
+        # Select the index of the word with the highest probability
+        predicted_word_index = np.argmax(predicted_probilities, axis=-1)
+
+        # Convert predicted index back to the corresponding word
+        predicted_word = tokenizer.index_word[predicted_word_index[0]]
+
+        # Append the predicted word to the seed text
+        seed_text = seed_text + " " + predicted_word
+
+    return seed_text
+
+seed_text = "Bu hafta sonu"
+print(genereate_text(seed_text, 5))
+
+seed_text = "Kitap yazmak"
+print(genereate_text(seed_text, 5))
+
+seed_text = "Akşamları"
+print(genereate_text(seed_text, 5))
+
+seed_text = "Yarın koşu yapmayı"
+print(genereate_text(seed_text, 5))
