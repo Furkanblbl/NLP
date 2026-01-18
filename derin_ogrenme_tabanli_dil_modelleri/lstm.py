@@ -14,7 +14,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences 
 
 # Create train dataset
-text = [
+texts = [
     "Bugün hava çok güzel.",
     "Sabah erkenden yürüyüşe çıktım.",
     "Kahvaltıda peynir ve zeytin yedim.",
@@ -180,10 +180,33 @@ text = [
     "Günü kapattım."
 ]
 
-
-
 # tokenization, padding, label encoding
 
+#tokenization
+tokenizer = Tokenizer()
+tokenizer.fit_on_texts(texts) # learn frequences on the texts
+total_words = len(tokenizer.word_index) + 1 
+
+# Create n-gram arras
+input_sequences = []
+for text in texts:
+    token_list = tokenizer.texts_to_sequences([text])[0]
+    # create n-gram array every text
+    for i in range(1, len(token_list)):
+        n_gram_sequence = token_list[:i+1]
+        input_sequences.append(n_gram_sequence)
+# print(input_sequences)
+
+# padding
+max_sequence_lengt = max(len(x) for x in input_sequences)
+# print(f"max_sequence_lengt: {max_sequence_lengt}")
+input_sequences = pad_sequences(input_sequences, maxlen = max_sequence_lengt, padding="pre")
+
+# X(input) and y(target)
+X = input_sequences[:,:-1]
+
+y = input_sequences[:,-1]
+y = tf.keras.utils.to_categorical(y, num_classes = total_words) # one hot encoding
 
 
 # Create lstm model, compile, train, evaluate
