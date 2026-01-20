@@ -2,7 +2,7 @@ import nltk
 from nltk.wsd import lesk
 
 nltk.download("wordnet")
-nltk.download("own-1.4")
+nltk.download("omw-1.4")
 nltk.download("punkt")
 
 # sentence1
