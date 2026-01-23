@@ -48,6 +48,8 @@ def predict_answer(context, question):
     # combine tokens to form the final answer string
     answer = tokenizer.convert_tokens_to_string(answer_tokens)
 
+    return answer
+
 question = "What is the capital of France?"
 context = "France, in Western Europe, encompasses medieval cities, alpine villages and Mediterranean beaches. Paris, its capital, is famed for its fashion houses, classical art museums including the Louvre and monuments like the Eiffel Tower."
 
